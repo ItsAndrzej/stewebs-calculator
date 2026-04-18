@@ -495,22 +495,20 @@ input:focus, select:focus {
     <div class="fields">
       <div class="field-row">
         <div class="field">
-          <label for="pellet" data-i18n="pelletLabel"></label>
-          <input id="pellet" type="text" list="pellet-list" data-i18n-placeholder="pelletPlaceholder">
-          <datalist id="pellet-list">
-            <option value="JSB Exact 4.52 15.89gr">
-            <option value="H&N Field Target Trophy 4.51 8.64gr">
-            <option value="RWS Superdome 4.50 7.0gr">
-            <option value="Gamo Round 4.50 8.0gr">
-            <option value="JSB King Exact 4.52 18.13gr">
-            <option value="H&N Baracuda Match 4.50 8.18gr">
-            <option value="RWS Hobby 4.50 7.0gr">
-            <option value="Gamo Hunter 4.50 10.0gr">
-          </datalist>
+          <label for="pelletSelect" data-i18n="pelletSelectLabel"></label>
+          <select id="pelletSelect">
+            <option value="" data-i18n-opt="pelletSelectDefault"></option>
+          </select>
         </div>
         <div class="field-sm">
           <label for="caliber" data-i18n="caliberLabel"></label>
-          <input id="caliber" type="number" step="0.01" value="4.5">
+          <input id="caliber" type="number" step="0.01" placeholder="0.00">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="pellet" data-i18n="pelletNameLabel"></label>
+          <input id="pellet" type="text" data-i18n-placeholder="pelletNamePlaceholder">
         </div>
       </div>
 
@@ -603,6 +601,17 @@ input:focus, select:focus {
 </div>
 
 <script>
+const PELLET_PRESETS = [
+  { name: 'JSB Exact 4.52',               cal: 4.52, grains: 15.89 },
+  { name: 'H&N Field Target Trophy 4.51', cal: 4.51, grains: 8.64  },
+  { name: 'RWS Superdome 4.50',           cal: 4.50, grains: 7.0   },
+  { name: 'Gamo Round 4.50',              cal: 4.50, grains: 8.0   },
+  { name: 'JSB King Exact 4.52',          cal: 4.52, grains: 18.13 },
+  { name: 'H&N Baracuda Match 4.50',      cal: 4.50, grains: 8.18  },
+  { name: 'RWS Hobby 4.50',               cal: 4.50, grains: 7.0   },
+  { name: 'Gamo Hunter 4.50',             cal: 4.50, grains: 10.0  },
+];
+
 const GRAIN_TO_GRAM = 0.06479891;
 const FPS_TO_MS    = 0.3048;
 const J_TO_FTPLB   = 0.737562149;
@@ -611,6 +620,10 @@ const LEGAL_LIMIT_J = 10;
 
 const T = {
   sv: {
+    pelletSelectLabel:    'Välj kula',
+    pelletSelectDefault:  '— Välj preset —',
+    pelletNameLabel:      'Namn (för favoriter)',
+    pelletNamePlaceholder:'Valfritt...',
     pelletLabel:        'Kula / Pellet',
     pelletPlaceholder:  'Skriv eller välj...',
     caliberLabel:       'Kaliber (mm)',
@@ -641,6 +654,10 @@ const T = {
     favMeta:            (f) => `${f.values.cal_mm.toFixed(2)} mm · ${f.values.weight_g.toFixed(2)} g · ${f.values.vel_ms.toFixed(1)} m/s · ${f.values.energyJ.toFixed(2)} J`,
   },
   en: {
+    pelletSelectLabel:    'Select pellet',
+    pelletSelectDefault:  '— Select preset —',
+    pelletNameLabel:      'Name (for favorites)',
+    pelletNamePlaceholder:'Optional...',
     pelletLabel:        'Pellet',
     pelletPlaceholder:  'Type or choose...',
     caliberLabel:       'Caliber (mm)',
@@ -698,11 +715,19 @@ function applyLang() {
   });
   document.getElementById('langSE').classList.toggle('active', lang === 'sv');
   document.getElementById('langEN').classList.toggle('active', lang === 'en');
+
+  // Rebuild preset options so the default option text is translated
+  const current = pelletSelect.value;
+  pelletSelect.innerHTML = `<option value="">${t('pelletSelectDefault')}</option>` +
+    PELLET_PRESETS.map((p, i) => `<option value="${i}">${p.name} · ${p.grains} gr</option>`).join('');
+  pelletSelect.value = current;
+
   calculateAndDisplay();
   renderFavorites();
 }
 
 /* ── DOM refs ─────────────────────────────────── */
+const pelletSelect = document.getElementById('pelletSelect');
 const pelletInput  = document.getElementById('pellet');
 const caliberInput = document.getElementById('caliber');
 const weightInput  = document.getElementById('weight');
@@ -835,12 +860,26 @@ function deleteFavorite(i) {
   renderFavorites();
 }
 
+pelletSelect.addEventListener('change', () => {
+  const idx = parseInt(pelletSelect.value);
+  if (isNaN(idx)) return;
+  const p = PELLET_PRESETS[idx];
+  pelletInput.value  = p.name;
+  caliberInput.value = p.cal;
+  weightUnit.value   = 'grains';
+  weightInput.value  = p.grains;
+  [caliberInput, weightInput].forEach(el => el.dispatchEvent(new Event('input', { bubbles: true })));
+  calculateAndDisplay();
+});
+
 saveBtn.addEventListener('click', saveFavorite);
 clearBtn.addEventListener('click', () => {
+  pelletSelect.value = '';
   pelletInput.value  = '';
-  caliberInput.value = '4.5';
-  weightInput.value  = '14';
-  velInput.value     = '200';
+  caliberInput.value = '';
+  weightInput.value  = '';
+  velInput.value     = '';
+  [caliberInput, weightInput, velInput].forEach(el => el.dispatchEvent(new Event('input', { bubbles: true })));
   calculateAndDisplay();
 });
 
