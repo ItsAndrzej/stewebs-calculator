@@ -39,17 +39,5 @@ Fonts via Google Fonts. Icons via Font Awesome.
 
 ---
 
-## Development
-
-All source files are in the root of this repo. To run locally, just open `index.html` in a browser.
-
-To push updates:
-```
-git add .
-git commit -m "describe your change"
-git push
-```
-
----
 
 *Built by SteWeb*
