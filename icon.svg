@@ -1,5 +1,26 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <rect width="512" height="512" rx="80" fill="#0b63a3"/>
-  <!-- Crow/raven shape (simplified FontAwesome fa-crow path) -->
-  <text x="256" y="340" font-family="serif" font-size="300" text-anchor="middle" fill="#ffd24d">🐦‍⬛</text>
+  <!-- Background -->
+  <rect width="512" height="512" rx="80" fill="#040b11"/>
+
+  <!-- Bullseye (concentric filled circles, offset slightly to leave room for calc badge) -->
+  <circle cx="218" cy="224" r="168" fill="#e8a828"/>
+  <circle cx="218" cy="224" r="140" fill="#040b11"/>
+  <circle cx="218" cy="224" r="106" fill="#e8a828"/>
+  <circle cx="218" cy="224" r="78"  fill="#040b11"/>
+  <circle cx="218" cy="224" r="44"  fill="#e8a828"/>
+
+  <!-- Calculator badge (bottom-right) -->
+  <rect x="298" y="308" width="168" height="188" rx="14" fill="#0b1d2c" stroke="#e8a828" stroke-width="6"/>
+  <!-- Screen -->
+  <rect x="314" y="323" width="136" height="44" rx="5" fill="#e8a828" opacity="0.18"/>
+  <!-- Button grid: 3 cols x 3 rows -->
+  <rect x="314" y="381" width="36" height="26" rx="5" fill="#e8a828" opacity="0.55"/>
+  <rect x="358" y="381" width="36" height="26" rx="5" fill="#e8a828" opacity="0.55"/>
+  <rect x="402" y="381" width="36" height="26" rx="5" fill="#e8a828" opacity="0.55"/>
+  <rect x="314" y="415" width="36" height="26" rx="5" fill="#e8a828" opacity="0.55"/>
+  <rect x="358" y="415" width="36" height="26" rx="5" fill="#e8a828" opacity="0.55"/>
+  <rect x="402" y="415" width="36" height="26" rx="5" fill="#e8a828" opacity="0.55"/>
+  <!-- Bottom wide button -->
+  <rect x="314" y="449" width="80" height="26" rx="5" fill="#e8a828" opacity="0.9"/>
+  <rect x="402" y="449" width="36" height="26" rx="5" fill="#e8a828" opacity="0.55"/>
 </svg>
