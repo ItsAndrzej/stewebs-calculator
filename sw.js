@@ -1,4 +1,4 @@
-const CACHE = 'ravenworks-v1';
+const CACHE = 'steweb-v1';
 const ASSETS = [
   './index.html',
   './manifest.json',
