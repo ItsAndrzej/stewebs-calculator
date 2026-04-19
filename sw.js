@@ -1,11 +1,17 @@
-const CACHE = 'steweb-v1';
+const CACHE  = 'steweb-v2';
 const ASSETS = [
   './index.html',
+  './style.css',
   './manifest.json',
   './icon.svg',
   './icon-maskable.svg',
+  './js/constants.js',
+  './js/translations.js',
+  './js/calculator.js',
+  './js/favorites.js',
+  './js/app.js',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2'
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2',
 ];
 
 self.addEventListener('install', e => {
@@ -16,9 +22,9 @@ self.addEventListener('install', e => {
 
 self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    ).then(() => self.clients.claim())
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
   );
 });
 

@@ -1,470 +1,26 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SteWeb's Ballistic Calculator</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SteWeb's Ballistic Calculator</title>
 
-<!-- PWA -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#040b11">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="SteWeb">
-<link rel="apple-touch-icon" href="icon.svg">
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#040b11">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SteWeb">
+  <link rel="apple-touch-icon" href="icon.svg">
 
-<!-- Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<style>
-:root {
-  --void:   #040b11;
-  --deep:   #071524;
-  --panel:  #0b1d2c;
-  --gold:   #e8a828;
-  --gold-glow: rgba(232,168,40,0.07);
-  --gold-border: rgba(232,168,40,0.22);
-  --gold-bright: rgba(232,168,40,0.5);
-  --cyan:   #5bc8de;
-  --text:   #c0d8e8;
-  --muted:  #3a5a6a;
-  --danger: #c05050;
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: 'Rajdhani', sans-serif;
-  background-color: var(--void);
-  background-image:
-    linear-gradient(rgba(91,200,222,0.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(91,200,222,0.018) 1px, transparent 1px);
-  background-size: 28px 28px;
-  color: var(--text);
-  min-height: 100vh;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 20px 16px 40px;
-}
-
-/* ── Layout ─────────────────────────────────── */
-.wrapper {
-  display: flex;
-  gap: 16px;
-  width: 100%;
-  max-width: 1060px;
-}
-.main-col { flex: 0 0 58%; min-width: 0; }
-.side-col  { flex: 1; min-width: 0; }
-
-/* ── Header ─────────────────────────────────── */
-.header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 28px;
-  animation: fadeUp 0.45s ease both;
-}
-.logo-box {
-  width: 50px; height: 50px;
-  border: 1px solid var(--gold-border);
-  display: flex; align-items: center; justify-content: center;
-  color: var(--gold);
-  font-size: 19px;
-  position: relative;
-  flex-shrink: 0;
-}
-.logo-box::before {
-  content: '';
-  position: absolute;
-  top: -2px; left: -2px;
-  width: 10px; height: 10px;
-  border-top: 2px solid var(--gold);
-  border-left: 2px solid var(--gold);
-}
-.logo-box::after {
-  content: '';
-  position: absolute;
-  bottom: -2px; right: -2px;
-  width: 10px; height: 10px;
-  border-bottom: 2px solid var(--gold);
-  border-right: 2px solid var(--gold);
-}
-.header-text { flex: 1; min-width: 0; }
-.app-eyebrow {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  color: var(--text);
-  margin-bottom: 3px;
-}
-.app-title {
-  font-family: 'Orbitron', monospace;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--gold);
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* ── Language Toggle ─────────────────────────── */
-.lang-toggle {
-  display: flex;
-  border: 1px solid var(--gold-border);
-  flex-shrink: 0;
-  overflow: hidden;
-}
-.lang-toggle button {
-  background: transparent;
-  border: none;
-  color: var(--muted);
-  padding: 6px 11px;
-  font-family: 'Orbitron', monospace;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-}
-.lang-toggle button.active {
-  background: var(--gold);
-  color: var(--void);
-}
-
-/* ── Install Banner ──────────────────────────── */
-#installBanner {
-  display: none;
-  background: var(--deep);
-  border: 1px solid var(--gold-border);
-  border-left: 2px solid var(--gold);
-  padding: 10px 14px;
-  font-size: 13px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-#installBanner button {
-  background: var(--gold);
-  color: var(--void);
-  border: none;
-  padding: 5px 14px;
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-/* ── Field Inputs ────────────────────────────── */
-.fields { animation: fadeUp 0.45s 0.1s ease both; }
-.field-row {
-  display: flex;
-  gap: 14px;
-  margin-bottom: 18px;
-  align-items: flex-end;
-}
-.field { flex: 1; }
-.field-sm { flex: 0 0 100px; }
-
-label {
-  display: block;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 2.5px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 7px;
-}
-input[type=number],
-input[type=text],
-select {
-  width: 100%;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid var(--gold-border);
-  color: var(--text);
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 15px;
-  padding: 4px 2px 8px;
-  outline: none;
-  transition: border-color 0.2s, color 0.2s;
-  -webkit-appearance: none;
-  border-radius: 0;
-}
-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23e8a828'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 2px center;
-  padding-right: 18px;
-  cursor: pointer;
-}
-select option { background: #071524; color: var(--text); }
-input:focus, select:focus {
-  border-bottom-color: var(--gold);
-  color: var(--gold);
-}
-
-.divider {
-  height: 1px;
-  background: linear-gradient(90deg, var(--gold-border) 0%, transparent 70%);
-  margin: 22px 0;
-}
-
-/* ── Result Panel ────────────────────────────── */
-.result-panel {
-  position: relative;
-  padding: 18px 20px 20px;
-  background: var(--panel);
-  border: 1px solid var(--gold-border);
-  animation: fadeUp 0.45s 0.2s ease both;
-}
-.result-panel::before {
-  content: '';
-  position: absolute;
-  top: -1px; left: -1px;
-  width: 14px; height: 14px;
-  border-top: 2px solid var(--gold);
-  border-left: 2px solid var(--gold);
-}
-.result-panel::after {
-  content: '';
-  position: absolute;
-  bottom: -1px; right: -1px;
-  width: 14px; height: 14px;
-  border-bottom: 2px solid var(--gold);
-  border-right: 2px solid var(--gold);
-}
-.result-eyebrow {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 3.5px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 16px;
-}
-.result-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px 24px;
-}
-.result-item {}
-.result-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 5px;
-}
-.result-primary {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 18px;
-  color: var(--gold);
-  line-height: 1.1;
-}
-.result-primary .unit {
-  font-size: 11px;
-  color: var(--muted);
-  margin-left: 3px;
-}
-.result-secondary {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 2px;
-}
-.result-primary.flash  { animation: numFlash 0.2s ease; }
-.result-secondary.flash { animation: numFlash 0.2s ease; }
-
-.legal-sidenote {
-  display: none;
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid var(--gold-border);
-  font-size: 11px;
-  letter-spacing: 0.4px;
-  color: var(--muted);
-}
-
-/* ── Buttons ─────────────────────────────────── */
-.btn-row {
-  display: flex;
-  gap: 10px;
-  margin-top: 16px;
-  animation: fadeUp 0.45s 0.3s ease both;
-}
-.btn {
-  flex: 1;
-  display: inline-flex;
-  gap: 7px;
-  align-items: center;
-  justify-content: center;
-  padding: 11px 12px;
-  border: 1px solid var(--gold-border);
-  background: transparent;
-  color: var(--gold);
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
-  white-space: nowrap;
-}
-.btn:hover { background: var(--gold-glow); }
-.btn.primary {
-  background: var(--gold);
-  color: var(--void);
-  border-color: var(--gold);
-}
-.btn.primary:hover { background: #d49820; }
-.btn.danger {
-  border-color: rgba(192,80,80,0.25);
-  color: var(--danger);
-}
-.btn.danger:hover { background: rgba(192,80,80,0.07); }
-
-.note {
-  margin-top: 14px;
-  font-size: 11px;
-  letter-spacing: 0.3px;
-  color: var(--muted);
-  line-height: 1.55;
-  animation: fadeUp 0.45s 0.35s ease both;
-}
-
-/* ── Favorites Panel ─────────────────────────── */
-.fav-card {
-  background: var(--deep);
-  border: 1px solid var(--gold-border);
-  padding: 16px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  animation: fadeUp 0.45s 0.15s ease both;
-}
-.fav-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 10px;
-  margin-bottom: 14px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--gold-border);
-}
-.fav-eyebrow {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 3.5px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 4px;
-}
-.fav-title {
-  font-family: 'Orbitron', monospace;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text);
-}
-.fav-btns { display: flex; gap: 6px; flex-shrink: 0; }
-.fav-btn {
-  padding: 6px 10px;
-  border: 1px solid var(--gold-border);
-  background: transparent;
-  color: var(--gold);
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.fav-btn:hover { background: var(--gold-glow); }
-
-.fav-list { flex: 1; overflow-y: auto; }
-.fav-empty {
-  font-size: 12px;
-  color: var(--muted);
-  padding: 10px 2px;
-  letter-spacing: 0.4px;
-}
-.fav-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--gold-border);
-}
-.fav-item:last-child { border-bottom: none; }
-.fav-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 3px;
-}
-.fav-meta {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 11px;
-  color: var(--muted);
-}
-.fav-actions { display: flex; gap: 4px; flex-shrink: 0; }
-.fav-icon-btn {
-  width: 30px; height: 30px;
-  border: 1px solid var(--gold-border);
-  background: transparent;
-  color: var(--muted);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.fav-icon-btn:hover { border-color: var(--gold); color: var(--gold); }
-.fav-icon-btn.del:hover { border-color: var(--danger); color: var(--danger); }
-
-.fav-footer {
-  margin-top: 12px;
-  padding-top: 10px;
-  border-top: 1px solid var(--gold-border);
-  font-size: 11px;
-  color: var(--muted);
-  letter-spacing: 0.3px;
-}
-
-/* ── Animations ──────────────────────────────── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes numFlash {
-  0%   { opacity: 0.2; color: var(--cyan); }
-  100% { opacity: 1;   color: var(--gold); }
-}
-
-/* ── Responsive ──────────────────────────────── */
-@media (max-width: 860px) {
-  .wrapper { flex-direction: column; }
-  .main-col, .side-col { flex: none; width: 100%; }
-}
-@media (max-width: 480px) {
-  body { padding: 14px 12px 40px; }
-  .app-title { font-size: 13px; }
-  .result-grid { grid-template-columns: 1fr 1fr; }
-  .btn-row { flex-wrap: wrap; }
-  .btn { flex: 1 1 calc(50% - 5px); }
-}
-</style>
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="wrapper">
@@ -493,6 +49,7 @@ input:focus, select:focus {
     </div>
 
     <div class="fields">
+
       <div class="field-row">
         <div class="field">
           <label for="pelletSelect" data-i18n="pelletSelectLabel"></label>
@@ -505,6 +62,7 @@ input:focus, select:focus {
           <input id="caliber" type="number" step="0.01" placeholder="0.00">
         </div>
       </div>
+
       <div class="field-row">
         <div class="field">
           <label for="pellet" data-i18n="pelletNameLabel"></label>
@@ -515,7 +73,7 @@ input:focus, select:focus {
       <div class="field-row">
         <div class="field">
           <label for="weight" data-i18n="weightLabel"></label>
-          <input id="weight" type="number" step="0.01" value="14">
+          <input id="weight" type="number" step="0.01">
         </div>
         <div class="field-sm">
           <label for="weightUnit" data-i18n="unitLabel"></label>
@@ -529,7 +87,7 @@ input:focus, select:focus {
       <div class="field-row">
         <div class="field">
           <label for="velocity" data-i18n="velocityLabel"></label>
-          <input id="velocity" type="number" step="0.1" value="200">
+          <input id="velocity" type="number" step="0.1">
         </div>
         <div class="field-sm">
           <label for="velUnit" data-i18n="unitLabel"></label>
@@ -539,6 +97,7 @@ input:focus, select:focus {
           </select>
         </div>
       </div>
+
     </div>
 
     <div class="divider"></div>
@@ -572,7 +131,7 @@ input:focus, select:focus {
 
     <div class="btn-row">
       <button class="btn primary" id="saveBtn"><i class="fas fa-star"></i> <span data-i18n="saveBtn"></span></button>
-      <button class="btn danger" id="clearBtn"><span data-i18n="clearBtn"></span></button>
+      <button class="btn danger"  id="clearBtn"><span data-i18n="clearBtn"></span></button>
     </div>
 
     <div class="note" data-i18n="note"></div>
@@ -584,345 +143,25 @@ input:focus, select:focus {
       <div class="fav-head">
         <div>
           <div class="fav-eyebrow" data-i18n="favSubtitle"></div>
-          <div class="fav-title" data-i18n="favTitle"></div>
+          <div class="fav-title"   data-i18n="favTitle"></div>
         </div>
         <div class="fav-btns">
           <button class="fav-btn" id="exportBtn" data-i18n="exportBtn"></button>
           <button class="fav-btn" id="importBtn" data-i18n="importBtn"></button>
         </div>
       </div>
-
       <div class="fav-list" id="favList"></div>
-
       <div class="fav-footer" data-i18n="favFooter"></div>
     </div>
   </div>
 
 </div>
 
-<script>
-const PELLET_PRESETS = [
-  { name: 'JSB Exact 4.52',               cal: 4.52, grains: 15.89 },
-  { name: 'H&N Field Target Trophy 4.51', cal: 4.51, grains: 8.64  },
-  { name: 'RWS Superdome 4.50',           cal: 4.50, grains: 7.0   },
-  { name: 'Gamo Round 4.50',              cal: 4.50, grains: 8.0   },
-  { name: 'JSB King Exact 4.52',          cal: 4.52, grains: 18.13 },
-  { name: 'H&N Baracuda Match 4.50',      cal: 4.50, grains: 8.18  },
-  { name: 'RWS Hobby 4.50',               cal: 4.50, grains: 7.0   },
-  { name: 'Gamo Hunter 4.50',             cal: 4.50, grains: 10.0  },
-];
-
-const GRAIN_TO_GRAM = 0.06479891;
-const FPS_TO_MS    = 0.3048;
-const J_TO_FTPLB   = 0.737562149;
-const MM_TO_IN     = 1 / 25.4;
-const LEGAL_LIMIT_J = 10;
-
-const T = {
-  sv: {
-    pelletSelectLabel:    'Välj kula',
-    pelletSelectDefault:  '— Välj preset —',
-    pelletNameLabel:      'Namn (för favoriter)',
-    pelletNamePlaceholder:'Valfritt...',
-    pelletLabel:        'Kula / Pellet',
-    pelletPlaceholder:  'Skriv eller välj...',
-    caliberLabel:       'Kaliber (mm)',
-    weightLabel:        'Vikt',
-    unitLabel:          'Enhet',
-    gramsOpt:           'gram',
-    velocityLabel:      'Hastighet',
-    resultLabel:        'Resultat',
-    energyLabel:        'Energi',
-    caliberResultLabel: 'Kaliber',
-    weightResultLabel:  'Pelletvikt',
-    saveBtn:            'Spara favorit',
-    clearBtn:           'Rensa fält',
-    note:               'Tips: tryck på uppladdningsikonen på en favorit för att ladda in värdena. Favoriterna sparas lokalt i din enhet.',
-    favTitle:           'Favoriter',
-    favSubtitle:        'Spara & återanvänd',
-    favFooter:          '<strong>Behålls mellan sessioner</strong> — sparas lokalt på enheten.',
-    favEmpty:           'Inga favoriter sparade ännu.',
-    exportBtn:          'Export',
-    importBtn:          'Import',
-    installText:        'Installera SteWeb som app',
-    installBtn:         'Installera',
-    legalOk:            '* Under 10 J — tillståndsfritt i Sverige.',
-    legalWarn:          '* Över 10 J — vapentillstånd krävs i Sverige.',
-    alertNoName:        'Ange ett namn på kulan/pellet!',
-    confirmDuplicate:   (n) => `"${n}" finns redan. Ersätta den?`,
-    importError:        'Fel vid import: ',
-    favMeta:            (f) => `${f.values.cal_mm.toFixed(2)} mm · ${f.values.weight_g.toFixed(2)} g · ${f.values.vel_ms.toFixed(1)} m/s · ${f.values.energyJ.toFixed(2)} J`,
-  },
-  en: {
-    pelletSelectLabel:    'Select pellet',
-    pelletSelectDefault:  '— Select preset —',
-    pelletNameLabel:      'Name (for favorites)',
-    pelletNamePlaceholder:'Optional...',
-    pelletLabel:        'Pellet',
-    pelletPlaceholder:  'Type or choose...',
-    caliberLabel:       'Caliber (mm)',
-    weightLabel:        'Weight',
-    unitLabel:          'Unit',
-    gramsOpt:           'grams',
-    velocityLabel:      'Velocity',
-    resultLabel:        'Result',
-    energyLabel:        'Energy',
-    caliberResultLabel: 'Caliber',
-    weightResultLabel:  'Pellet weight',
-    saveBtn:            'Save favorite',
-    clearBtn:           'Clear',
-    note:               'Tip: tap the upload icon on a favorite to load its values. Favorites are stored locally on your device.',
-    favTitle:           'Favorites',
-    favSubtitle:        'Save & reuse',
-    favFooter:          '<strong>Persists between sessions</strong> — stored locally on device.',
-    favEmpty:           'No favorites saved yet.',
-    exportBtn:          'Export',
-    importBtn:          'Import',
-    installText:        'Install SteWeb as an app',
-    installBtn:         'Install',
-    legalOk:            '',
-    legalWarn:          '',
-    alertNoName:        'Enter a name for the pellet!',
-    confirmDuplicate:   (n) => `"${n}" already exists. Replace it?`,
-    importError:        'Import error: ',
-    favMeta:            (f) => `${f.values.cal_mm.toFixed(2)} mm · ${f.values.weight_g.toFixed(2)} g · ${f.values.vel_ms.toFixed(1)} m/s · ${f.values.energyJ.toFixed(2)} J`,
-  }
-};
-
-let lang = localStorage.getItem('stewebLang') || 'sv';
-
-function t(key) { return T[lang][key]; }
-
-function setLang(l) {
-  lang = l;
-  localStorage.setItem('stewebLang', lang);
-  document.documentElement.lang = lang;
-  applyLang();
-}
-
-function applyLang() {
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.dataset.i18n;
-    if (T[lang][key] !== undefined) el.innerHTML = T[lang][key];
-  });
-  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-    const key = el.dataset.i18nPlaceholder;
-    if (T[lang][key] !== undefined) el.placeholder = T[lang][key];
-  });
-  document.querySelectorAll('[data-i18n-opt]').forEach(el => {
-    const key = el.dataset.i18nOpt;
-    if (T[lang][key] !== undefined) el.textContent = T[lang][key];
-  });
-  document.getElementById('langSE').classList.toggle('active', lang === 'sv');
-  document.getElementById('langEN').classList.toggle('active', lang === 'en');
-
-  // Rebuild preset options so the default option text is translated
-  const current = pelletSelect.value;
-  pelletSelect.innerHTML = `<option value="">${t('pelletSelectDefault')}</option>` +
-    PELLET_PRESETS.map((p, i) => `<option value="${i}">${p.name} · ${p.grains} gr</option>`).join('');
-  pelletSelect.value = current;
-
-  calculateAndDisplay();
-  renderFavorites();
-}
-
-/* ── DOM refs ─────────────────────────────────── */
-const pelletSelect = document.getElementById('pelletSelect');
-const pelletInput  = document.getElementById('pellet');
-const caliberInput = document.getElementById('caliber');
-const weightInput  = document.getElementById('weight');
-const weightUnit   = document.getElementById('weightUnit');
-const velInput     = document.getElementById('velocity');
-const velUnit      = document.getElementById('velUnit');
-
-const outEnergyJ   = document.getElementById('outEnergyJ');
-const outEnergyFt  = document.getElementById('outEnergyFt');
-const outCalMm     = document.getElementById('outCalMm');
-const outCalIn     = document.getElementById('outCalIn');
-const outWeightG   = document.getElementById('outWeightG');
-const outWeightGr  = document.getElementById('outWeightGr');
-const outVelMs     = document.getElementById('outVelMs');
-const outVelFps    = document.getElementById('outVelFps');
-const legalSidenote = document.getElementById('legalSidenote');
-
-const saveBtn  = document.getElementById('saveBtn');
-const clearBtn = document.getElementById('clearBtn');
-const favListEl = document.getElementById('favList');
-const exportBtn = document.getElementById('exportBtn');
-const importBtn = document.getElementById('importBtn');
-
-[caliberInput, weightInput, weightUnit, velInput, velUnit].forEach(el =>
-  el.addEventListener('input', calculateAndDisplay)
-);
-
-function flash(...els) {
-  els.forEach(el => {
-    el.classList.remove('flash');
-    void el.offsetWidth;
-    el.classList.add('flash');
-  });
-}
-
-function calculateValues() {
-  const cal_mm   = parseFloat(caliberInput.value) || 0;
-  const wt       = parseFloat(weightInput.value) || 0;
-  const vel      = parseFloat(velInput.value) || 0;
-  const weight_g = (weightUnit.value === 'grains') ? wt * GRAIN_TO_GRAM : wt;
-  const vel_ms   = (velUnit.value === 'fps') ? vel * FPS_TO_MS : vel;
-  const massKg   = Math.max(weight_g / 1000, 0);
-  const energyJ  = (massKg > 0 && vel_ms > 0) ? 0.5 * massKg * vel_ms * vel_ms : 0;
-  return {
-    cal_mm, cal_in: cal_mm * MM_TO_IN,
-    weight_g,
-    weight_grains: weightUnit.value === 'grains' ? wt : weight_g / GRAIN_TO_GRAM,
-    vel_ms,
-    vel_fps: velUnit.value === 'fps' ? vel : vel_ms / FPS_TO_MS,
-    energyJ, energyFt: energyJ * J_TO_FTPLB
-  };
-}
-
-function calculateAndDisplay() {
-  const v = calculateValues();
-
-  outEnergyJ.innerHTML  = `${v.energyJ.toFixed(2)}<span class="unit">J</span>`;
-  outEnergyFt.textContent = `${v.energyFt.toFixed(2)} ft·lbf`;
-  outCalMm.innerHTML    = `${v.cal_mm.toFixed(3)}<span class="unit">mm</span>`;
-  outCalIn.textContent  = `${v.cal_in.toFixed(3)}"`;
-  outWeightG.innerHTML  = `${v.weight_g.toFixed(3)}<span class="unit">g</span>`;
-  outWeightGr.textContent = `${v.weight_grains.toFixed(2)} gr`;
-  outVelMs.innerHTML    = `${v.vel_ms.toFixed(2)}<span class="unit">m/s</span>`;
-  outVelFps.textContent = `${v.vel_fps.toFixed(1)} fps`;
-
-  flash(outEnergyJ, outEnergyFt, outCalMm, outCalIn, outWeightG, outWeightGr, outVelMs, outVelFps);
-
-  if (v.energyJ > 0 && lang === 'sv') {
-    const msg = v.energyJ <= LEGAL_LIMIT_J ? t('legalOk') : t('legalWarn');
-    legalSidenote.textContent = msg;
-    legalSidenote.style.display = msg ? 'block' : 'none';
-  } else {
-    legalSidenote.style.display = 'none';
-  }
-}
-
-function saveFavorite() {
-  const name = pelletInput.value.trim();
-  if (!name) { alert(t('alertNoName')); return; }
-  const v = calculateValues();
-  let favs = JSON.parse(localStorage.getItem('stewebFavs') || '[]');
-  const dup = favs.findIndex(f => f.name === name);
-  if (dup !== -1) {
-    if (!confirm(t('confirmDuplicate')(name))) return;
-    favs.splice(dup, 1);
-  }
-  favs.push({ name, values: v });
-  localStorage.setItem('stewebFavs', JSON.stringify(favs));
-  renderFavorites();
-}
-
-function renderFavorites() {
-  favListEl.innerHTML = '';
-  const favs = JSON.parse(localStorage.getItem('stewebFavs') || '[]');
-  if (favs.length === 0) {
-    favListEl.innerHTML = `<div class="fav-empty">${t('favEmpty')}</div>`;
-    return;
-  }
-  favs.forEach((f, i) => {
-    const div = document.createElement('div');
-    div.className = 'fav-item';
-    div.innerHTML = `
-      <div>
-        <div class="fav-name">${f.name}</div>
-        <div class="fav-meta">${t('favMeta')(f)}</div>
-      </div>
-      <div class="fav-actions">
-        <button class="fav-icon-btn" onclick="loadFavorite(${i})" title="Load"><i class="fas fa-upload"></i></button>
-        <button class="fav-icon-btn del" onclick="deleteFavorite(${i})" title="Delete"><i class="fas fa-trash"></i></button>
-      </div>`;
-    favListEl.appendChild(div);
-  });
-}
-
-function loadFavorite(i) {
-  const favs = JSON.parse(localStorage.getItem('stewebFavs') || '[]');
-  if (!favs[i]) return;
-  const v = favs[i].values;
-  pelletInput.value  = favs[i].name;
-  caliberInput.value = v.cal_mm;
-  weightInput.value  = weightUnit.value === 'grams' ? v.weight_g : v.weight_grains;
-  velInput.value     = velUnit.value === 'm/s' ? v.vel_ms : v.vel_fps;
-  calculateAndDisplay();
-}
-
-function deleteFavorite(i) {
-  const favs = JSON.parse(localStorage.getItem('stewebFavs') || '[]');
-  favs.splice(i, 1);
-  localStorage.setItem('stewebFavs', JSON.stringify(favs));
-  renderFavorites();
-}
-
-pelletSelect.addEventListener('change', () => {
-  const idx = parseInt(pelletSelect.value);
-  if (isNaN(idx)) return;
-  const p = PELLET_PRESETS[idx];
-  pelletInput.value  = p.name;
-  caliberInput.value = p.cal;
-  weightUnit.value   = 'grains';
-  weightInput.value  = p.grains;
-  [caliberInput, weightInput].forEach(el => el.dispatchEvent(new Event('input', { bubbles: true })));
-  calculateAndDisplay();
-});
-
-saveBtn.addEventListener('click', saveFavorite);
-clearBtn.addEventListener('click', () => {
-  pelletSelect.value = '';
-  pelletInput.value  = '';
-  caliberInput.value = '';
-  weightInput.value  = '';
-  velInput.value     = '';
-  [caliberInput, weightInput, velInput].forEach(el => el.dispatchEvent(new Event('input', { bubbles: true })));
-  calculateAndDisplay();
-});
-
-exportBtn.addEventListener('click', () => {
-  const blob = new Blob([localStorage.getItem('stewebFavs') || '[]'], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'steweb_favorites.json';
-  a.click();
-});
-
-importBtn.addEventListener('click', () => {
-  const input = document.createElement('input');
-  input.type = 'file'; input.accept = 'application/json';
-  input.onchange = e => {
-    const reader = new FileReader();
-    reader.onload = evt => {
-      try {
-        localStorage.setItem('stewebFavs', JSON.stringify(JSON.parse(evt.target.result)));
-        renderFavorites();
-      } catch(err) { alert(t('importError') + err.message); }
-    };
-    reader.readAsText(e.target.files[0]);
-  };
-  input.click();
-});
-
-/* PWA install */
-let deferredPrompt = null;
-const installBanner = document.getElementById('installBanner');
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault(); deferredPrompt = e; installBanner.style.display = 'flex';
-});
-document.getElementById('installBtn').addEventListener('click', () => {
-  if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  deferredPrompt.userChoice.then(() => { deferredPrompt = null; installBanner.style.display = 'none'; });
-});
-window.addEventListener('appinstalled', () => { installBanner.style.display = 'none'; });
-
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
-
-document.addEventListener('DOMContentLoaded', () => { applyLang(); });
-</script>
+<!-- Scripts — order matters: constants → translations → calculator → favorites → app -->
+<script src="js/constants.js"></script>
+<script src="js/translations.js"></script>
+<script src="js/calculator.js"></script>
+<script src="js/favorites.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
